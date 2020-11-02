@@ -68,36 +68,32 @@ class RootDialog extends ComponentDialog {
 
     async chooseAction(step) {
 
-        const text = step.context.activity.text;
-        const validInputs = ['Buy a laptop', 'Plan a trip'];
-        if(validInputs.includes(text)) {
-            console.log(text);
-        }
-        else {
-            // return await this.sendSuggestedActions(step);
-        }
+        const message = await this.sendSuggestedActions();
+        await step.context.sendActivity(message);
+        return ComponentDialog.EndOfTurn;
 
-        return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'What would you like to do?',
-            choices: ChoiceFactory.toChoices(['Buy a laptop', 'Plan a trip'])
-        });
+        // return await step.prompt(CHOICE_PROMPT, {
+        //     prompt: 'What would you like to do?',
+        //     choices: ChoiceFactory.toChoices(['Buy a laptop', 'Plan a trip'])
+        // });
     }
 
     // This is the first step of the WaterfallDialog.
     // It kicks off the dialog with the multi-question SlotFillingDialog,
     // then passes the aggregated results on to the next step.
     async startDialog(step) {
-        if (step.result.value.toLowerCase() == 'Buy a laptop'.toLowerCase()) {
-            step.values.choice = step.result.value;
+        const text = step.context.activity.text;
+        if (text.toLowerCase() === 'Buy a laptop'.toLowerCase()) {
+            step.values.choice = text;
             return await step.beginDialog('laptop');
         }
-        if(step.result.value.toLowerCase() == 'Plan a trip'.toLowerCase()) {
-            step.values.choice = step.result.value;
+        if(text.toLowerCase() === 'Plan a trip'.toLowerCase()) {
+            step.values.choice = text;
             return await step.beginDialog('trip');
         }
     }
 
-    async sendSuggestedActions(step) {
+    async sendSuggestedActions() {
         const cardActions = [
             {
                 type: ActionTypes.PostBack,
@@ -116,7 +112,7 @@ class RootDialog extends ComponentDialog {
         ];
 
         let reply = MessageFactory.suggestedActions(cardActions, 'What would you like to do?');
-        await step.context.sendActivity(reply);
+        return reply;
     }
 }
 
