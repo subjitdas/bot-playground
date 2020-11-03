@@ -24,6 +24,7 @@ const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const USER_PROFILE = 'USER_PROFILE';
+const SPECIAL_NUMBER_PROMPT = 'SPECIAL_NUMBER_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 
 class TripDialog extends ComponentDialog {
@@ -36,6 +37,7 @@ class TripDialog extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         this.addDialog(new NumberPrompt(NUMBER_PROMPT));
+        this.addDialog(new TextPrompt(SPECIAL_NUMBER_PROMPT, this.numberValidator));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.countryStep.bind(this),
@@ -71,6 +73,10 @@ class TripDialog extends ComponentDialog {
 
     async stateStep(step) {
         step.values.country = step.result;
+        
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
 
         return await step.prompt(NAME_PROMPT, {
             prompt: 'Please enter the state you want to travel.'
@@ -80,21 +86,34 @@ class TripDialog extends ComponentDialog {
     async durationStep(step) {
         step.values.state = step.result;
        
-        const promptOptions = { prompt: 'Please enter the duration of vacation.' };
-        return await step.prompt(NUMBER_PROMPT, promptOptions);      
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
+
+        const promptOptions = { prompt: 'Please enter the duration of vacation.', retryPrompt: 'Enter a number or quit/exit to end conversation' };
+        return await step.prompt(SPECIAL_NUMBER_PROMPT, promptOptions);      
 
     }
 
     async budgetStep(step) {
         step.values.duration = step.result;
         
-        return await step.prompt(NUMBER_PROMPT, {
-            prompt: 'Please enter your budget.'
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
+
+        return await step.prompt(SPECIAL_NUMBER_PROMPT, {
+            prompt: 'Please enter your budget.',
+            retryPrompt: 'Enter a number or quit/exit to end conversation'
         });
     }
 
     async summaryStep(step) {
         step.values.budget = step.result;
+
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
 
         // Get the current profile object from user state.
         const trip = await this.trip.get(step.context, new Trip());
@@ -124,6 +143,13 @@ class TripDialog extends ComponentDialog {
 
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
         return await step.endDialog();
+    }
+
+    async numberValidator(promptContext) {
+        if (promptContext.recognized.succeeded) {
+            const input = promptContext.recognized.value;
+            return (Number.isInteger(parseInt(input)) || input.toLowerCase() == 'quit' || input.toLowerCase() == 'exit');
+        }
     }
 }
 

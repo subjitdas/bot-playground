@@ -83,6 +83,9 @@ class RootDialog extends ComponentDialog {
     // then passes the aggregated results on to the next step.
     async startDialog(step) {
         const text = step.context.activity.text;
+        if(text.toLowerCase() === 'quit' || text.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
         if (text.toLowerCase() === 'Buy a laptop'.toLowerCase()) {
             step.values.choice = text;
             return await step.beginDialog('laptop');

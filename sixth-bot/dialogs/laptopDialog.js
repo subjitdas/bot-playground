@@ -72,6 +72,10 @@ class LaptopDialog extends ComponentDialog {
     async colourStep(step) {
         step.values.company = step.result;
 
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
+
         return await step.prompt(NAME_PROMPT, {
             prompt: 'Please enter the colour you want.'
         });
@@ -79,6 +83,10 @@ class LaptopDialog extends ComponentDialog {
     
     async purposeStep(step) {
         step.values.colour = step.result;
+
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
        
         const promptOptions = { prompt: 'Please enter the your purpose of laptop.'};
         return await step.prompt(NAME_PROMPT, promptOptions);      
@@ -88,6 +96,10 @@ class LaptopDialog extends ComponentDialog {
     async budgetStep(step) {
         step.values.purpose = step.result;
 
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
+
         return await step.prompt(NUMBER_PROMPT, {
             prompt: 'Please enter your budget.'
         });
@@ -95,6 +107,10 @@ class LaptopDialog extends ComponentDialog {
 
     async summaryStep(step) {
         step.values.budget = step.result;
+
+        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+            return await step.endDialog();
+        }
 
         // Get the current profile object from user state.
         const laptop = await this.laptop.get(step.context, new Laptop());
