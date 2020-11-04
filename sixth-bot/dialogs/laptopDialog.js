@@ -16,6 +16,7 @@ const {
 } = require('botbuilder-dialogs');
 const { Channels } = require('botbuilder-core');
 const { Laptop } = require('./laptop');
+const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 
 const laptopCard = require('../resources/LaptopCard.json');
 
@@ -26,7 +27,7 @@ const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const USER_PROFILE = 'USER_PROFILE';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 
-class LaptopDialog extends ComponentDialog {
+class LaptopDialog extends CancelAndHelpDialog {
     constructor(dialogId, userState) {
         super(dialogId);
 
@@ -72,9 +73,9 @@ class LaptopDialog extends ComponentDialog {
     async colourStep(step) {
         step.values.company = step.result;
 
-        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
-            return await step.endDialog();
-        }
+        // if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+        //     return await step.endDialog();
+        // }
 
         return await step.prompt(NAME_PROMPT, {
             prompt: 'Please enter the colour you want.'
@@ -84,9 +85,9 @@ class LaptopDialog extends ComponentDialog {
     async purposeStep(step) {
         step.values.colour = step.result;
 
-        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
-            return await step.endDialog();
-        }
+        // if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+        //     return await step.endDialog();
+        // }
        
         const promptOptions = { prompt: 'Please enter the your purpose of laptop.'};
         return await step.prompt(NAME_PROMPT, promptOptions);      
@@ -96,21 +97,22 @@ class LaptopDialog extends ComponentDialog {
     async budgetStep(step) {
         step.values.purpose = step.result;
 
-        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
-            return await step.endDialog();
-        }
+        // if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+        //     return await step.endDialog();
+        // }
 
         return await step.prompt(NUMBER_PROMPT, {
-            prompt: 'Please enter your budget.'
+            prompt: 'Please enter your budget.',
+            retryPrompt: 'Please enter a number.'
         });
     }
 
     async summaryStep(step) {
         step.values.budget = step.result;
 
-        if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
-            return await step.endDialog();
-        }
+        // if(step.result.toLowerCase() === 'quit' || step.result.toLowerCase() === 'exit') {
+        //     return await step.endDialog();
+        // }
 
         // Get the current profile object from user state.
         const laptop = await this.laptop.get(step.context, new Laptop());

@@ -17,10 +17,11 @@ const {
 
 const { LaptopDialog } = require('./laptopDialog');
 const { TripDialog } = require('./tripDialog');
+const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 
-class RootDialog extends ComponentDialog {
+class RootDialog extends CancelAndHelpDialog {
     /**
      * SampleBot defines the core business logic of this bot.
      * @param {ConversationState} conversationState A ConversationState object used to store dialog state.
